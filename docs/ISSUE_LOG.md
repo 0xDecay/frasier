@@ -4,6 +4,29 @@ Bugs, incidents, and fixes. Most recent first.
 
 ---
 
+## ISS-029: Null result completion — final step returns nothing, mission marked done
+
+**Date:** Feb 25, 2026 | **Severity:** Critical | **Status:** Open (documented in PRD-v1.0)
+
+**Symptom:** Mission #91 (autonomous info product bake-off) completed 18 of 19 steps, producing ~61,000 words of research. Step 14 (final executive summary) produced null output. The project was marked "completed" with no deliverable. Dhroov received nothing.
+
+**Root Cause:** Three compounding failures:
+1. **Context overflow:** All 18 predecessor outputs (~61,000 words) were injected into Step 14's prompt via `getPredecessorOutputs()`. This likely exceeded the model's effective context window, causing a silent failure in synthesis — the model returned null/empty content without an explicit error.
+2. **No result validation:** `completeStep()` in `missions.js` saves whatever content it receives, including null, without checking for empty output. The pipeline returned without erroring, so the step was not marked as `failed`.
+3. **Status-only completion check:** `checkMissionCompletion()` checks only that all steps have a terminal status (`completed` or `failed`). It does not inspect `mission_steps.result`. A step with `status = 'completed'` and `result = NULL` passes the check.
+
+**Fix:** Documented in PRD-v1.0.md Section 3.9 (Result Validation Gate) — three-layer defense:
+1. Pipeline output guard: fail step immediately if content is null/empty
+2. Database CHECK constraint: prevent null results on completed steps
+3. Mission completion deliverable check: verify final step has actual content before marking mission done
+4. Context overflow prevention: token budget for predecessor outputs with truncation
+
+**Decision:** Addressed in PRD-v1.0 Phase 1 (Section 3.9) and Phase 2 (Section 4.4 Assembly Context Budget)
+
+**Files:** Not yet implemented — pending PRD approval and Phase 1 build
+
+---
+
 ## ISS-028: Zombie step queue clog — worker starved by dead missions
 
 **Date:** Feb 25, 2026 | **Severity:** Critical | **Status:** Fixed (v0.11.1)
