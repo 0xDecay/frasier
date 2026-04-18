@@ -87,9 +87,25 @@ DeepSeek-chat → MiniMax-M2.7 → claude-opus-4-6. Aux tasks (vision/web_extrac
 ### Exposed secret (third one flagged this session)
 GitHub PAT `github_pat_11ACCMYEI0…Rr` lives in plaintext inside Frasier's MEMORY.md and allegedly also in `/home/paperclip/thinkfraction/.env`. Self-contradicts the "1Password only, no flat files" rule stated on the very next line of that same memory. Revoke + rotate into `Agents2` vault.
 
+### Visual skin (SHIPPED 2026-04-18)
+Frasier runs the **neonwave-recolored sakura skin** — Dhroov's custom fork of `joeynyc/hermes-skins` sakura, with the palette swapped to hot magenta / electric pink / cyan on void purple. Defined in two places (both kept in sync):
+
+| Path | Used by | Notes |
+|---|---|---|
+| `/opt/hermes/data/skins/sakura.yaml` | Docker gateway (Discord/Telegram DMs) | Canonical. Owner `10000:10000`, mode `644`. Pre-ship backup at `sakura.yaml.bak-pre-neonwave-20260418-144944`. |
+| `/root/.hermes/skins/sakura.yaml` | Host-side `hermes chat` when SSH'd into mootoshi | Must mirror the canonical file — `hermes chat` on host defaults HERMES_HOME to `~/.hermes` and reads skins from there, not from `/opt/hermes/data/skins`. Stale-version backup at `sakura.yaml.bak-stale-20260418-145723`. |
+
+Activated in config at `/opt/hermes/data/config.yaml` → `display.skin: sakura`. Pre-change config backup: `config.yaml.bak-20260418-144944`.
+
+**Recolor helper** (idempotent, re-runnable): `frasier/hermes_frasier/ops/sakura_recolor.py`. Reads `~/Downloads/sakura.yaml`, applies the neonwave palette mapping, emits `sakura-neonwave.yaml` + a faithful `sakura-preview.html` dashboard.
+
+**Known gotcha — host↔container skin-path drift:** the Docker gateway uses `HERMES_HOME=/data` (→ `/opt/hermes/data/skins/`), but the host CLI defaults `HERMES_HOME` to `$HOME/.hermes` (→ `/root/.hermes/skins/`). Updating only one location leaves the other stale. Long-term fix candidate: patch `/usr/local/bin/hermes` wrapper to export `HERMES_HOME=/opt/hermes/data` so both surfaces resolve identically. Not done yet.
+
+**Skins only apply to the CLI/terminal surface.** Discord platform (`gateway/platforms/discord.py`) imports zero from `skin_engine` — Rich markup `[bold #hex]text[/]` isn't translated to Discord's limited ANSI/markdown. The banner, per-character gradient, and braille hero render only when Dhroov is in an interactive `hermes chat` session on the VPS.
+
 ### Gaps / dead threads
 - **Spell Book cron** (9am ET Apple Notes sorter, cron id `a813bcd125af` → Discord channel `1494017207724675313`) — referenced in old session notes but `/root/.hermes/cron/`, `/opt/hermes/data/cron/`, and root crontab are all empty. Only live cron is `openclaw-monitor.py` every 5min. Was it Mac-hosted (now wiped) or was it never migrated to VPS? TBD.
-- **`/root/.hermes/` exists but is empty** — probably a leftover from a pre-/opt/hermes layout. Candidate for cleanup.
+- **`/root/.hermes/` is NOT empty** — previously noted as empty; actually contains the host-CLI skin/config state parallel to `/opt/hermes/data/`. Source of the skin-path drift gotcha above.
 - **No MCP servers registered** in Frasier's config (`mcp: {}` implicit). Notion access goes through the memory-stored DB id + NOTION_API_KEY env, not MCP.
 
 ---
