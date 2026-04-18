@@ -1,0 +1,6 @@
+{
+  "setup": "ln -s \"$CONDUCTOR_ROOT_PATH/.env\" .env && npm install",
+  "run": "npm test",
+  "archive": "rm -rf node_modules",
+  "runScriptMode": "concurrent"
+}

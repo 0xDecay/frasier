@@ -19,3 +19,11 @@ tests/contentron/content.test.js:generic-api-key:6
 0d4b17a497e80f6d52c0a0a214747f015e3b4fbe:docs/PRD.md:generic-api-key:1687
 0d4b17a497e80f6d52c0a0a214747f015e3b4fbe:docs/PRD.md:generic-api-key:1690
 0d4b17a497e80f6d52c0a0a214747f015e3b4fbe:docs/PRD.md:generic-api-key:1696
+
+# Non-exploitable carryovers — v1/ archive of Frasier-v1 PRD (mirrors old docs/PRD.md entries above)
+# Hit 1331 was a real Supabase service_role JWT — redacted inline, not allowlisted.
+.env.tpl:discord-client-id:11
+v1/Frasier_PRD.md:generic-api-key:1320
+v1/Frasier_PRD.md:generic-api-key:1687
+v1/Frasier_PRD.md:generic-api-key:1690
+v1/Frasier_PRD.md:generic-api-key:1696

@@ -4,3 +4,9 @@ node_modules/
 *.log
 .DS_Store
 gitleaks-report.json
+
+# 1Password migration — block plaintext env files
+.env.*.local
+
+# third-party embedded repo — not ours to archive
+v1/pixel-agents/
