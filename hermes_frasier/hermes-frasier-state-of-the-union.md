@@ -22,9 +22,16 @@ The original April 3 install was deliberately removed because it was redundant w
 - `~/hermes-hudui/` (joeynyc's web UI, 334 MB) — **preserved per Dhroov's instruction**. Note: now orphaned (no local Hermes to read from). The VPS runs its own `hermes-hudui-gateway` + `hermes-hudui-paperclip` Docker services; those are independent.
 
 **Secrets exposed during this audit (flagged for revocation):**
-- Anthropic API key in the old Mac `~/.hermes/auth.json`: `sk-ant-api03-T5sj…sR2w-2M1kwQAA` — revoke at console.anthropic.com.
-- Exa API key in the old Mac MCP URL: `026a5a04-b9cd-43f1-af22-617402a8ca10` — revoke at dashboard.exa.ai.
-- GitHub PAT in Frasier's VPS `MEMORY.md` (see §2c): `github_pat_11ACCMYEI0…Rr` — revoke at github.com/settings/tokens, rotate into 1P `Agents2`.
+
+| # | Key | Location | Action |
+|---|---|---|---|
+| 1 | Anthropic API key `sk-ant-api03-T5sj…sR2w-2M1kwQAA` | Old Mac `~/.hermes/auth.json` (now deleted) | Revoke at console.anthropic.com |
+| 2 | Exa API key `026a5a04-b9cd-43f1-af22-617402a8ca10` | Old Mac `.claude.json` MCP URL (now removed) | Revoke at dashboard.exa.ai |
+| 3 | GitHub PAT `github_pat_11ACCMYEI0…Rr` | VPS `/opt/hermes/data/memories/MEMORY.md` (still live in Frasier's memory) | Revoke at github.com/settings/tokens, rotate into 1P `Agents2` |
+| 4 | Supabase service_role JWT (project ref `juaekekwvcuyeleyvrvc`, valid through 2036-02-11) | `v1/Frasier_PRD.md:1331` — redacted inline 2026-04-18 | Rotate via Supabase dashboard → Settings → API |
+| 5 | Supabase legacy key `sb_secret_PXMMmpfa9jI…FIMvtSRq` | `v1/Frasier_PRD.md:1315` — redacted inline 2026-04-18 | Rotate via Supabase dashboard (GitHub push-scanner flagged as real) |
+
+\#4 and \#5 were uncovered during the first push attempt to `github.com/0xDecay/frasier` — gitleaks missed them, GitHub's push-protection scanner caught them. Both redacted before the commit landed.
 
 Discord bot `frasier#5393` — if still referenced anywhere, it would now only run off the VPS gateway's token (`/opt/hermes/data/.env`). Not verified today; flag for future check.
 
